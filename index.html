@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#176b57">
+  <title>Yov Store — Catatan Transaksi</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <section id="authGate" class="auth-gate">
+    <form id="authForm" class="auth-card">
+      <img class="brand-logo auth-brand" src="assets/images/yov-logo.png" alt="Logo Yov Store">
+      <p class="eyebrow">YOV STORE</p>
+      <h1 id="authTitle">Login Yov Store</h1>
+      <p class="muted"></p>
+      <label class="field">Username<input id="authEmail" type="email" autocomplete="email" required placeholder="-----"></label>
+      <label class="field">Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="-----"></label>
+      <p id="authError" class="form-error hidden" role="alert"></p>
+      <button id="authSubmit" class="button button-primary auth-submit" type="submit">Masuk</button>
+      <button id="authModeToggle" class="button button-quiet auth-submit" type="button">Daftar</button>
+      <p class="auth-footnote"></p>
+    </form>
+  </section>
+  <div class="app-shell hidden" id="appShell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Yov Store beranda">
+        <img class="brand-logo" src="assets/images/yov-logo.png" alt="Logo Yov Store">
+        <span><strong>Yov Store</strong><small>Transaksi</small></span>
+      </a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">▦</span> Dashboard</button>
+        <button class="nav-item" data-view="transactions"><span class="nav-icon">↔</span> Transaksi</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="local-note"><span class="status-dot"></span><span><strong id="connectionStatus">Menghubungkan…</strong><small id="signedInEmail">Supabase</small></span></div>
+        <button type="button" class="button button-quiet" id="signOutButton">Keluar</button>
+        <p class="sidebar-version">Yov Store_ID</p>
+      </div>
+    </aside>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-button menu-toggle" id="menuToggle" aria-label="Buka navigasi" aria-expanded="false">☰</button>
+        <div class="topbar-title"><span class="eyebrow">DASHBOARD</span><strong id="pageTitle">Catatan</strong></div>
+        <div class="dashboard-actions" id="dashboardActions"><div class="date-pill" id="todayLabel">Hari ini</div><button class="button button-primary" id="addTransactionTop">＋ Catatan baru</button></div>
+      </header>
+
+      <section class="page-view" id="dashboardView">
+        <div class="stats-grid account-stats">
+          <article class="stat-card account-card account-bca" role="button" tabindex="0" data-account="BCA" aria-label="Lihat transaksi BCA"><div class="stat-label">BCA <span class="stat-symbol bank">▤</span></div><strong id="bcaBalance">0</strong><p class="stat-foot"></p></article>
+          <article class="stat-card account-card account-cash" role="button" tabindex="0" data-account="CASH" aria-label="Lihat transaksi CASH"><div class="stat-label">CASH <span class="stat-symbol income">↗</span></div><strong id="cashBalance">0</strong><p class="stat-foot"></p></article>
+          <article class="stat-card account-card account-special" role="button" tabindex="0" data-account="CASH KHUSUS" aria-label="Lihat transaksi CASH KHUSUS"><div class="stat-label">CASH KHUSUS <span class="stat-symbol special">◆</span></div><strong id="specialCashBalance">0</strong><p class="stat-foot"></p></article>
+        </div>
+        <section class="panel dashboard-transactions" id="dashboardTransactionsPanel" aria-live="polite">
+          <div class="panel-heading"><div><p class="eyebrow">RIWAYAT</p><h2 id="dashboardTransactionsTitle">Semua transaksi</h2></div><div class="dashboard-history-controls"><label class="search-box dashboard-history-search"><span aria-hidden="true">⌕</span><input type="search" id="dashboardHistorySearch" placeholder="Cari transaksi..." aria-label="Cari nama transaksi di riwayat"></label><button type="button" class="show-all-transactions" id="showAllDashboardTransactions" aria-label="Tampilkan semua transaksi" title="Tampilkan semua transaksi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M7 3 4 6l3 3"/></svg></button></div></div>
+          <div id="dashboardTransactionsList"></div>
+        </section>
+      </section>
+
+      <section class="page-view hidden" id="transactionsView">
+        <section class="panel">
+          <div class="filters">
+            <label class="search-box"><span>⌕</span><input type="search" id="searchInput" placeholder="Cari Transaksi" aria-label="Cari transaksi"></label>
+            <select id="typeFilter" aria-label="Filter jenis transaksi"><option value="all">Semua Jenis</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select>
+            <select id="accountFilter" aria-label="Filter sumber uang"><option value="all">Semua sumber</option><option value="BCA">BCA</option><option value="CASH">CASH</option><option value="CASH KHUSUS">CASH KHUSUS</option></select>
+          </div>
+          <div id="allTransactions"></div>
+        </section>
+      </section>
+
+      <footer class="footer">Yov Store <span>•</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="transactionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <form class="modal" id="transactionForm" novalidate>
+      <div class="modal-heading"><div><p class="eyebrow">CATATAN BARU</p><h2 id="modalTitle">Tambah transaksi</h2></div><button type="button" class="icon-button" id="closeModal" aria-label="Tutup">×</button></div>
+      <div class="form-grid">
+        <label class="field field-wide">Jenis transaksi
+          <div class="type-choice"><label class="choice"><input type="radio" name="type" value="income" checked><span>↗ Pemasukan</span></label><label class="choice"><input type="radio" name="type" value="expense"><span>↘ Pengeluaran</span></label></div>
+        </label>
+        <label class="field field-wide">Nama transaksi<input name="title" type="text" placeholder="Ketik Catatan" required></label>
+        <label class="field field-amount">Nominal (ribuan Rp)<input name="amount" type="number" min="0.001" step="any" placeholder="---" required></label>
+        <label class="field field-date">Tanggal<input name="date" type="date" required></label>
+        <div class="field field-wide"><span>Sumber uang</span>
+          <div class="account-choice" role="radiogroup" aria-label="Pilih sumber uang">
+            <label class="account-option"><input type="radio" name="account" value="BCA"><span>🏦<strong>BCA</strong></span></label>
+            <label class="account-option"><input type="radio" name="account" value="CASH" checked><span>💵<strong>CASH</strong></span></label>
+            <label class="account-option"><input type="radio" name="account" value="CASH KHUSUS"><span>💰<strong>CASH KHUSUS</strong></span></label>
+          </div>
+        </div>
+      </div>
+      <p class="form-error hidden" id="formError" role="alert"></p>
+      <div class="modal-actions"><button type="button" class="button button-quiet" id="cancelModal">Batal</button><button type="submit" class="button button-primary" id="saveTransactionButton">Simpan</button></div>
+    </form>
+  </div>
+  <div class="toast hidden" id="toast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
